@@ -27,12 +27,23 @@ namespace ClassLibrary1
             Console.WriteLine("\nЗвіт по складу:");
             var products = warehouseRepository.GetAllProducts();
 
-            if (products.Count == 0)
+            if (IsInventoryEmpty(products))
             {
                 Console.WriteLine("Склад пустий.");
                 return;
             }
 
+            PrintProducts(products);
+        }
+
+        private bool IsInventoryEmpty(List<Warehouse> products)
+        {
+            return products.Count == 0;
+
+        }
+
+        private void PrintProducts(List<Warehouse> products)
+        {
             foreach (var item in products)
             {
                 Console.WriteLine($"Товар: {item.Name}, Кількість: {item.Quantity}, Ціна: {item.Price}, Дата завозу: {item.LastDeliveryDate}");

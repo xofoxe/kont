@@ -13,4 +13,5 @@ namespace ClassLibrary1
         Warehouse GetProduct(string productName);
         List<Warehouse> GetAllProducts();
     }
+     
 }

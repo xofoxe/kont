@@ -27,12 +27,16 @@ namespace ClassLibrary1
         public void RemoveProduct(string productName, int quantity)
         {
             var product = GetProduct(productName);
+            ValidateProduct(product, quantity);
+            product.Quantity -= quantity;
+        }
+
+        private void ValidateProduct(Warehouse product, int quantity)
+        {
             if (product == null)
                 throw new InvalidOperationException("Товар не знайдено на складі.");
             if (product.Quantity < quantity)
                 throw new InvalidOperationException("Недостатньо товарів на складі.");
-
-            product.Quantity -= quantity;
         }
         public Warehouse GetProduct(string productName)
         {
