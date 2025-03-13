@@ -1,60 +1,64 @@
-﻿using System;
+using System;
 
-interface IDevice
+interface IDevice1
+{
+    string GetDeviceType();
+}
+interface IDevice2
 {
     string GetDeviceType();
 }
 
-class Laptop : IDevice
+class Laptop : IDevice1
 {
     public string GetDeviceType() => "Laptop";
 }
 
-class Netbook : IDevice
+class Netbook : IDevice1
 {
     public string GetDeviceType() => "Netbook";
 }
 
-class EBook : IDevice
+class EBook : IDevice2
 {
     public string GetDeviceType() => "EBook";
 }
 
-class Smartphone : IDevice
+class Smartphone : IDevice2
 {
     public string GetDeviceType() => "Smartphone";
 }
 
 interface IDeviceFactory
 {
-    IDevice CreateLaptop();
-    IDevice CreateNetbook();
-    IDevice CreateEBook();
-    IDevice CreateSmartphone();
+    IDevice1 CreateLaptop();
+    IDevice1 CreateNetbook();
+    IDevice2 CreateEBook();
+    IDevice2 CreateSmartphone();
 }
 
 class IProneFactory : IDeviceFactory
 {
-    public IDevice CreateLaptop() => new Laptop();
-    public IDevice CreateNetbook() => new Netbook();
-    public IDevice CreateEBook() => new EBook();
-    public IDevice CreateSmartphone() => new Smartphone();
+    public IDevice1 CreateLaptop()=>new Laptop();    
+    public IDevice1 CreateNetbook() => new Netbook();
+    public IDevice2 CreateEBook() => new EBook();
+    public IDevice2 CreateSmartphone() => new Smartphone();
 }
 
 class KiaomiFactory : IDeviceFactory
 {
-    public IDevice CreateLaptop() => new Laptop();
-    public IDevice CreateNetbook() => new Netbook();
-    public IDevice CreateEBook() => new EBook();
-    public IDevice CreateSmartphone() => new Smartphone();
+    public IDevice1 CreateLaptop() => new Laptop();
+    public IDevice1 CreateNetbook() => new Netbook();
+    public IDevice2 CreateEBook() => new EBook();
+    public IDevice2 CreateSmartphone() => new Smartphone();
 }
 
 class BalaxyFactory : IDeviceFactory
 {
-    public IDevice CreateLaptop() => new Laptop();
-    public IDevice CreateNetbook() => new Netbook();
-    public IDevice CreateEBook() => new EBook();
-    public IDevice CreateSmartphone() => new Smartphone();
+    public IDevice1 CreateLaptop() => new Laptop();
+    public IDevice1 CreateNetbook() => new Netbook();
+    public IDevice2 CreateEBook() => new EBook();
+    public IDevice2 CreateSmartphone() => new Smartphone();
 }
 
 class Program
