@@ -4,6 +4,55 @@ using System.Text;
 
 namespace ConsoleApp1
 {
+    interface ICommand
+    {
+        void Undo();
+        void Execute();
+    }
+    class AddClassCommand : ICommand
+    {
+        private LightElementNode _target;
+        private string _className;
+
+        public AddClassCommand(LightElementNode target, string className)
+        {
+            _target = target;
+            _className = className;
+        }
+
+        public void Execute()
+        {
+            _target.AddClass(_className);
+        }
+
+        public void Undo()
+        {
+            _target.CssClasses.Remove(_className);
+        }
+    }
+    class AddChildCommand : ICommand
+    {
+        private LightElementNode _parent;
+        private LightNode _child;
+
+        public AddChildCommand(LightElementNode parent, LightNode child)
+        {
+            _parent = parent;
+            _child = child;
+        }
+
+        public void Execute()
+        {
+            _parent.AddChild(_child);
+        }
+
+        public void Undo()
+        {
+            _parent.Children.Remove(_child);
+        }
+    }
+     
+
     abstract class LightNode
     {
         public virtual IEnumerable<LightNode> TraverseDepthFirst()
