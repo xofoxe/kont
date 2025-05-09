@@ -51,7 +51,32 @@ namespace ConsoleApp1
             _parent.Children.Remove(_child);
         }
     }
-     
+    interface IElementState
+    {
+        void Apply(LightElementNode element);
+        bool CanAddChild { get; }
+        string StateClass { get; }
+    }
+    class NormalState : IElementState
+    {
+        public void Apply(LightElementNode element)
+        {
+        }
+
+        public bool CanAddChild => true;
+        public string StateClass => "";
+    }
+    class HighlightedState : IElementState
+    {
+        public void Apply(LightElementNode element)
+        {
+            element.AddClass("highlighted");
+        }
+
+        public bool CanAddChild => true;
+        public string StateClass => "highlighted";
+    }
+
 
     abstract class LightNode
     {
@@ -121,6 +146,12 @@ namespace ConsoleApp1
             TagName = tagName;
             IsBlock = isBlock;
             IsSelfClosing = isSelfClosing;
+        }
+        private IElementState _state = new NormalState();
+        public void SetState(IElementState state)
+        {
+            _state = state;
+            state.Apply(this);
         }
 
         public void AddClass(string className)
