@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleApp1
-{     
+{
     abstract class LightNode
     {
+        public virtual IEnumerable<LightNode> TraverseDepthFirst()
+        {
+            yield return this;
+        }
+
+        public virtual IEnumerable<LightNode> TraverseBreadthFirst()
+        {
+            yield return this;
+        }
+
         public string Render()
         {
             OnCreated();
@@ -78,6 +86,37 @@ namespace ConsoleApp1
             {
                 Children.Add(child);
                 child.OnInserted();
+            }
+        }
+        public override IEnumerable<LightNode> TraverseDepthFirst()
+        {
+            yield return this;
+            foreach (var child in Children)
+            {
+                foreach (var descendant in child.TraverseDepthFirst())
+                {
+                    yield return descendant;
+                }
+            }
+        }
+
+        public override IEnumerable<LightNode> TraverseBreadthFirst()
+        {
+            var queue = new Queue<LightNode>();
+            queue.Enqueue(this);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                yield return current;
+
+                if (current is LightElementNode elementNode)
+                {
+                    foreach (var child in elementNode.Children)
+                    {
+                        queue.Enqueue(child);
+                    }
+                }
             }
         }
 
@@ -159,5 +198,5 @@ namespace ConsoleApp1
 
             Console.WriteLine(div.OuterHTML);
         }
-    }    
+    }
 }
