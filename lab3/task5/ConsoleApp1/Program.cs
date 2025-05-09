@@ -5,11 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp1
-{
-     
+{     
     abstract class LightNode
     {
+        public string Render()
+        {
+            OnCreated();
+            var html = OuterHTML;
+            OnRendered();
+            return html;
+        }
+
         public abstract string OuterHTML { get; }
+        protected virtual void OnCreated() { }
+        protected internal virtual void OnInserted() { }
+        protected virtual void OnRemoved() { }
+        protected virtual void OnStylesApplied() { }
+        protected virtual void OnClassListApplied() { }
+        protected virtual void OnTextRendered() { }
+        protected virtual void OnRendered() { }
     }
 
     class LightTextNode : LightNode
@@ -21,8 +35,21 @@ namespace ConsoleApp1
             Text = text;
         }
 
-        public override string OuterHTML => Text;
+        public override string OuterHTML
+        {
+            get
+            {
+                OnTextRendered();
+                return Text;
+            }
+        }
+
+        protected override void OnTextRendered()
+        {
+            Console.WriteLine($"Text rendered: \"{Text}\"");
+        }
     }
+
 
     class LightElementNode : LightNode
     {
@@ -42,12 +69,16 @@ namespace ConsoleApp1
         public void AddClass(string className)
         {
             CssClasses.Add(className);
+            OnClassListApplied();
         }
 
         public void AddChild(LightNode child)
         {
             if (!IsSelfClosing)
+            {
                 Children.Add(child);
+                child.OnInserted();
+            }
         }
 
         public string InnerHTML
@@ -57,7 +88,7 @@ namespace ConsoleApp1
                 StringBuilder sb = new StringBuilder();
                 foreach (var child in Children)
                 {
-                    sb.Append(child.OuterHTML);
+                    sb.Append(child.Render());
                 }
                 return sb.ToString();
             }
@@ -67,6 +98,8 @@ namespace ConsoleApp1
         {
             get
             {
+                OnStylesApplied();
+
                 StringBuilder sb = new StringBuilder();
                 sb.Append($"<{TagName}");
 
@@ -87,10 +120,22 @@ namespace ConsoleApp1
                     sb.Append(InnerHTML);
                     sb.Append($"</{TagName}>");
                 }
+
                 return sb.ToString();
             }
         }
+
+        protected override void OnStylesApplied()
+        {
+            Console.WriteLine($"Styles applied to <{TagName}> with classes: {string.Join(", ", CssClasses)}");
+        }
+
+        protected override void OnClassListApplied()
+        {
+            Console.WriteLine($"Class list changed on <{TagName}>: {string.Join(", ", CssClasses)}");
+        }
     }
+
 
     class Program
     {
@@ -114,7 +159,5 @@ namespace ConsoleApp1
 
             Console.WriteLine(div.OuterHTML);
         }
-    }
-
-    
+    }    
 }
