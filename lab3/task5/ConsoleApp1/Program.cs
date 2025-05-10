@@ -4,6 +4,12 @@ using System.Text;
 
 namespace ConsoleApp1
 {
+    interface ILightNodeVisitor
+    {
+        void VisitTextNode(LightTextNode textNode);
+        void VisitElementNode(LightElementNode elementNode);
+    }
+
     interface ICommand
     {
         void Undo();
@@ -97,7 +103,7 @@ namespace ConsoleApp1
             OnRendered();
             return html;
         }
-
+        public abstract void Accept(ILightNodeVisitor visitor);
         public abstract string OuterHTML { get; }
         protected virtual void OnCreated() { }
         protected internal virtual void OnInserted() { }
@@ -125,7 +131,10 @@ namespace ConsoleApp1
                 return Text;
             }
         }
-
+        public override void Accept(ILightNodeVisitor visitor)
+        {
+            visitor.VisitTextNode(this);
+        }
         protected override void OnTextRendered()
         {
             Console.WriteLine($"Text rendered: \"{Text}\"");
@@ -153,7 +162,15 @@ namespace ConsoleApp1
             _state = state;
             state.Apply(this);
         }
+        public override void Accept(ILightNodeVisitor visitor)
+        {
+            visitor.VisitElementNode(this);
 
+            foreach (var child in Children)
+            {
+                child.Accept(visitor);
+            }
+        }
         public void AddClass(string className)
         {
             CssClasses.Add(className);
@@ -254,7 +271,23 @@ namespace ConsoleApp1
             Console.WriteLine($"Class list changed on <{TagName}>: {string.Join(", ", CssClasses)}");
         }
     }
+    class ElementCountingVisitor : ILightNodeVisitor
+    {
+        public Dictionary<string, int> TagCounts { get; } = new Dictionary<string, int>();
 
+        public void VisitTextNode(LightTextNode textNode)
+        {
+
+        }
+
+        public void VisitElementNode(LightElementNode elementNode)
+        {
+            if (!TagCounts.ContainsKey(elementNode.TagName))
+                TagCounts[elementNode.TagName] = 0;
+
+            TagCounts[elementNode.TagName]++;
+        }
+    }
 
     class Program
     {
